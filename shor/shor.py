@@ -146,10 +146,11 @@ class ShorAlgorithm:
 
         for phase, r in zip(df.phase.values, df.guess_for_r.values):
             if not np.isclose(0.0, phase):
-                guesses = [gcd(2**(r//2)-1, number), gcd(2**(r//2)+1, number)]
-                for guess in guesses:
-                    if guess not in [1,number] and (number % guess) == 0:
-                        guesses_list.append(guess)
+                if r%2 == 0:
+                    guesses = [gcd(2**(r//2)-1, number), gcd(2**(r//2)+1, number)]
+                    for guess in guesses:
+                        if guess not in [1,number] and (number % guess) == 0:
+                            guesses_list.append(guess)
                         
         guesses_set = set(guesses_list)
         
