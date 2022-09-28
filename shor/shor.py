@@ -115,7 +115,7 @@ class ShorAlgorithm:
         return qc
     
     def get_number_prime_factors(self, number: int, counts: dict) -> tuple:
-        """Return 
+        """Return a DataFrame and a Set with information about prime factors.
 
         Args:
             number (int): The number that we want to factorize.
