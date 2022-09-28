@@ -43,7 +43,7 @@ class ShorAlgorithm:
 
         Args:
             number (int): The number that we want to factorize.
-            a (int): An integer number that must belong to finite field defined by input number.
+            a (int): An integer number that must belong to set of numbers defined by gcd with the input number.
             power (int): The number that will be applied as power of a.
 
         Raises:
@@ -96,7 +96,7 @@ class ShorAlgorithm:
 
         Args:
             number (int): The number that we want to factorize.
-            a (int): An integer number that must belong to finite field defined by input number.
+            a (int): An integer number that must belong to set of numbers defined by gcd with the input number.
             num_qubits_qft (int): The number of qubits for QFT inverse circuit.
 
         Returns:
