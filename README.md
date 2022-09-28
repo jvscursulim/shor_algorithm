@@ -8,6 +8,8 @@ A implementation of Shor's algorithm that works for an arbitrary number.
 
 ### Installing requirements:
 
+`git clone https://github.com/jvscursulim/shor_algorithm`
+
 `pip install -r requirements.txt`
 
 ### Code example:
@@ -36,7 +38,7 @@ Output: `{3,5}`
 
 ### Quantum Circuit of code example:
 
-![Image](/home/jvictor/vs_code/shor_algorithm/qc_example.png)
+![image](figures/qc_example.png)
 
 ## References:
 
