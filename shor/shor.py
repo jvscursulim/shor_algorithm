@@ -4,9 +4,11 @@ import pandas as pd
 
 from fractions import Fraction
 from math import gcd
+from qiskit import execute
 from qiskit.circuit import ClassicalRegister, QuantumCircuit, QuantumRegister
 from qiskit.circuit.controlledgate import ControlledGate
 from qiskit.circuit.library import QFT
+from qiskit_aer import Aer
 
 
 class ShorAlgorithm:
@@ -114,44 +116,67 @@ class ShorAlgorithm:
         
         return qc
     
-    def get_number_prime_factors(self, number: int, counts: dict) -> tuple:
-        """Return a DataFrame and a Set with information about prime factors.
+    def get_number_prime_factors(self, number: int, num_qubits_qft: int = 8, shots: int = 8192) -> tuple:
+        """Return a tuple with the prime factors found.
 
         Args:
             number (int): The number that we want to factorize.
-            counts (dict): The result of the experiments done with
-                           Shor's algorithm quantum circuit.
+            num_qubits_qft (int, optional): The number of qubits for QFT inverse circuit.
+                                            Defaults to 8.
+            shots (int, optional): The number of repetions of the experiment 
+                                   with the quantum circuit to get probabilities. 
+                                   Defaults to 8192.
 
         Returns:
-            tuple: A DataFrame with information about prime factors
-                   and a Set with prime factors found.
+            tuple: A tuple with prime factors found.
         """
         
-        guesses_list = []
-        rows = []
-        columns = ["register_output", "phase", "fraction", "guess_for_r"]
-        keys_list = list(counts.keys())
-        num_qubits = len(keys_list[0])
+        factor_found = False
         
-        for output in counts:
-            decimal = int(output, 2)
-            phase = decimal/(2**num_qubits)
-            frac = Fraction(phase).limit_denominator(15)
-            rows.append([f"{output}(bin) = {decimal:>3}(dec)", 
-                        phase, 
-                        f"{frac.numerator}/{frac.denominator}",
-                        frac.denominator])
+        while not factor_found:
             
-        df = pd.DataFrame(rows, columns=columns)
+            a = np.random.randint(2, number)
+            k = gcd(a, number)
+            
+            if k != 1:
+                guesses_tuple = (k, int(number/k))
+                factor_found = True
+            else: 
+                guesses_list = []
+                rows = []
+                columns = ["register_output", "phase", "fraction", "guess_for_r"]
+                
+                qc = self.quantum_circuit(number=number, a=a, num_qubits_qft=num_qubits_qft)
+                backend = Aer.get_backend("qasm_simulator")
+                counts = execute(experiments=qc, backend=backend, shots=shots).result().get_counts()
+                
+                keys_list = list(counts.keys())
+                num_qubits = len(keys_list[0])
+                
+                for output in counts:
+                    decimal = int(output, 2)
+                    phase = decimal/(2**num_qubits)
+                    frac = Fraction(phase).limit_denominator(15)
+                    rows.append([f"{output}(bin) = {decimal:>3}(dec)", 
+                                phase, 
+                                f"{frac.numerator}/{frac.denominator}",
+                                frac.denominator])
+                    
+                df = pd.DataFrame(rows, columns=columns)
 
-        for phase, r in zip(df.phase.values, df.guess_for_r.values):
-            if not np.isclose(0.0, phase):
-                if r%2 == 0:
-                    guesses = [gcd(2**(r//2)-1, number), gcd(2**(r//2)+1, number)]
-                    for guess in guesses:
-                        if guess not in [1,number] and (number % guess) == 0:
-                            guesses_list.append(guess)
-                        
-        guesses_set = set(guesses_list)
+                for phase, r in zip(df.phase.values, df.guess_for_r.values):
+                    if not np.isclose(0.0, phase):
+                        if r%2 == 0:
+                            guesses = [gcd(a**(r//2)-1, number), gcd(a**(r//2)+1, number)]
+                            for guess in guesses:
+                                if guess not in [1,number] and (number % guess) == 0:
+                                    guesses_list.append(guess)
+                                
+                guesses_set = set(guesses_list)
+                if len(guesses_set) == 1:
+                    factor = list(guesses_set)[0]
+                    guesses_tuple = (factor, int(number/factor))
+                else:
+                    guesses_tuple = tuple(guesses_set)
         
-        return df, guesses_set
+        return guesses_tuple
