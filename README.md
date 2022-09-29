@@ -30,7 +30,7 @@ factors = shor.get_number_prime_factors(number=number, num_qubits_qft=num_qubits
 print(factors)
 ```
 
-Output: `{3,5}`
+Output: `(3,5)`
 
 ### Quantum Circuit of code example:
 
