@@ -14,22 +14,18 @@ A implementation of Shor's algorithm that works for an arbitrary number.
 
 ### Code example:
 
-Factoring `number=15` and using `a=2` as an element from the finite field defined by 15.
+Factoring `number=15`.
 
 ```python
-from qiskit import execute
-from qiskit_aer import Aer
-
 from shor import ShorAlgorithm
+
+number = 15
+num_qubits_qft = 2
+shots = 8192
 
 shor = ShorAlgorithm()
 
-qc = shor.quantum_circuit(number=15, a=2, num_qubits_qft=2)
-
-backend = Aer.get_backend("qasm_simulator")
-counts = execute(qc, backend=backend, shots=8192).result().get_counts()
-
-df, factors = shor.get_number_prime_factors(number=15, counts=counts)
+factors = shor.get_number_prime_factors(number=number, num_qubits_qft=num_qubits_qft, shots=shots)
 
 print(factors)
 ```
