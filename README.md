@@ -1,5 +1,7 @@
 # Shor's algorithm
 
+[![black](https://img.shields.io/badge/code%20style-black-000000.svg)](https://github.com/psf/black)
+
 ## Description:
 
 A implementation of Shor's algorithm that works for an arbitrary number. 
@@ -39,3 +41,4 @@ Output: `(3,5)`
 ## References:
 
 [Qiskit Textbook - Shor's algorithm](https://qiskit.org/textbook/ch-algorithms/shor.html)
+[Shor's paper](https://arxiv.org/pdf/quant-ph/9508027)
